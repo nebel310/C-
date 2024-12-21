@@ -1,0 +1,76 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int n = 3; // Размер матриц
+        int s = n * (n + 1) / 2; // Размер одномерного массива для верхнего треугольника
+
+        // Исходные матрицы в виде одномерных массивов (верхние треугольные)
+        int[] a = { 1, 2, 3, 4, 5, 6 }; // Верхний треугольник матрицы A
+        int[] b = { 7, 8, 9, 10, 11, 12 }; // Верхний треугольник матрицы B
+
+        // Результат перемножения
+        int[] c = new int[s];
+
+        // Перемножение матриц
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = i; j < n; j++)
+            {
+                int sum = 0;
+                for (int k = 0; k < n; k++)
+                {
+                    // Получение элементов из одномерных массивов
+                    int aVal = (k <= i) ? a[i * (i + 1) / 2 + k] : 0;
+                    int bVal = (k <= j) ? b[j * (j + 1) / 2 + k] : 0;
+                    sum += aVal * bVal;
+                }
+                // Сохранение результата в одномерном массиве
+                c[i * (i + 1) / 2 + j] = sum;
+            }
+        }
+
+        // Вывод исходных матриц
+        Console.WriteLine("Матрица A:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (j >= i)
+                    Console.Write(a[i * (i + 1) / 2 + j] + " ");
+                else
+                    Console.Write("0 ");
+            }
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("\nМатрица B:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (j >= i)
+                    Console.Write(b[i * (i + 1) / 2 + j] + " ");
+                else
+                    Console.Write("0 ");
+            }
+            Console.WriteLine();
+        }
+
+        // Вывод результата
+        Console.WriteLine("\nМатрица C (результат перемножения):");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (j >= i)
+                    Console.Write(c[i * (i + 1) / 2 + j] + " ");
+                else
+                    Console.Write("0 ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
