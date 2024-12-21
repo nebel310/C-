@@ -1,0 +1,83 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int n = 4; // Количество строк
+        int m = 3; // Количество столбцов
+
+        // Исходная матрица в виде одномерного массива
+        int[] matrix = {
+            1, 2, 3, // Строка 1
+            0, 0, 0, // Строка 2
+            4, 5, 6, // Строка 3
+            0, 7, 8  // Строка 4
+        };
+
+        // Вывод исходной матрицы
+        Console.WriteLine("Исходная матрица:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                Console.Write(matrix[i * m + j] + " ");
+            }
+            Console.WriteLine();
+        }
+
+        // Удаление строк, содержащих нулевые элементы
+        int newN = 0; // Количество оставшихся строк
+        for (int i = 0; i < n; i++)
+        {
+            bool hasZero = false;
+            for (int j = 0; j < m; j++)
+            {
+                if (matrix[i * m + j] == 0)
+                {
+                    hasZero = true;
+                    break;
+                }
+            }
+            if (!hasZero)
+            {
+                newN++;
+            }
+        }
+
+        // Создание новой матрицы без строк с нулевыми элементами
+        int[] newMatrix = new int[newN * m];
+        int newRow = 0;
+        for (int i = 0; i < n; i++)
+        {
+            bool hasZero = false;
+            for (int j = 0; j < m; j++)
+            {
+                if (matrix[i * m + j] == 0)
+                {
+                    hasZero = true;
+                    break;
+                }
+            }
+            if (!hasZero)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    newMatrix[newRow * m + j] = matrix[i * m + j];
+                }
+                newRow++;
+            }
+        }
+
+        // Вывод результата
+        Console.WriteLine("\nМатрица после удаления строк с нулевыми элементами:");
+        for (int i = 0; i < newN; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                Console.Write(newMatrix[i * m + j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
