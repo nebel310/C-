@@ -1,0 +1,43 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Пример матрицы 6x7
+        int[,] a = {
+            { 1, 2, 3, 4, 6, 5, 7 },
+            { 8, 9, 10, 11, 12, 13, 14 },
+            { 15, 16, 17, 18, 19, 20, 21 },
+            { 22, 23, 24, 25, 26, 27, 28 },
+            { 29, 30, 31, 32, 33, 34, 35 },
+            { 36, 37, 38, 39, 40, 41, 42 }
+        };
+
+        int rows = a.GetLength(0); // Количество строк
+        int cols = a.GetLength(1); // Количество столбцов
+
+        // Обрабатываем каждую строку матрицы
+        for (int i = 0; i < rows; i++)
+        {
+            // Переворачиваем строку
+            for (int j = 0; j < cols / 2; j++)
+            {
+                int temp = a[i, j];
+                a[i, j] = a[i, cols - 1 - j];
+                a[i, cols - 1 - j] = temp;
+            }
+        }
+
+        // Вывод результата
+        Console.WriteLine("Матрица после обработки:");
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                Console.Write(a[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
