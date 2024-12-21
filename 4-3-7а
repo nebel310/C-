@@ -1,0 +1,70 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int n = 3; // Размер матриц
+
+        // Исходные матрицы в виде двумерных массивов
+        int[,] a = {
+            { 1, 2, 3 },
+            { 0, 4, 5 },
+            { 0, 0, 6 }
+        };
+        int[,] b = {
+            { 7, 8, 9 },
+            { 0, 10, 11 },
+            { 0, 0, 12 }
+        };
+
+        // Результат перемножения
+        int[,] c = new int[n, n];
+
+        // Перемножение матриц
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int sum = 0;
+                for (int k = 0; k < n; k++)
+                {
+                    sum += a[i, k] * b[k, j];
+                }
+                c[i, j] = sum;
+            }
+        }
+
+        // Вывод исходных матриц
+        Console.WriteLine("Матрица A:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                Console.Write(a[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("\nМатрица B:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                Console.Write(b[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+
+        // Вывод результата
+        Console.WriteLine("\nМатрица C (результат перемножения):");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                Console.Write(c[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
