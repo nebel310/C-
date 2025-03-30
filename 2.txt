@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+
+public class Participant
+{
+    public string Name;
+    public double[] Scores;
+    public int TotalPlace;
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Participant> participants = new List<Participant>
+        {
+            new Participant
+            {
+                Name = "Иванов",
+                Scores = new double[] { 5.5, 4.8, 5.1, 5.0, 4.9, 5.2, 5.3 }
+            },
+            new Participant
+            {
+                Name = "Петров",
+                Scores = new double[] { 5.0, 5.2, 4.7, 5.1, 4.8, 5.0, 4.9 }
+            },
+            new Participant
+            {
+                Name = "Сидоров",
+                Scores = new double[] { 4.9, 4.7, 5.0, 4.8, 5.1, 4.9, 5.0 }
+            }
+        };
+
+        if (participants.Count == 0)
+        {
+            Console.WriteLine("Нет участников.");
+            return;
+        }
+
+        for (int judge = 0; judge < 7; judge++)
+        {
+            for (int i = 0; i < participants.Count; i++)
+            {
+                int place = 1;
+                for (int j = 0; j < participants.Count; j++)
+                {
+                    if (participants[j].Scores[judge] > participants[i].Scores[judge])
+                    {
+                        place++;
+                    }
+                }
+                participants[i].TotalPlace += place;
+            }
+        }
+
+        for (int i = 0; i < participants.Count - 1; i++)
+        {
+            for (int j = 0; j < participants.Count - i - 1; j++)
+            {
+                if (participants[j].TotalPlace > participants[j + 1].TotalPlace)
+                {
+                    Participant temp = participants[j];
+                    participants[j] = participants[j + 1];
+                    participants[j + 1] = temp;
+                }
+            }
+        }
+
+        Console.WriteLine("Результаты соревнований:");
+        Console.WriteLine("------------------------");
+        Console.WriteLine("Место | Участник | Сумма мест");
+        Console.WriteLine("------------------------");
+        for (int i = 0; i < participants.Count; i++)
+        {
+            Console.WriteLine($"{i + 1,5} | {participants[i].Name,-8} | {participants[i].TotalPlace,10}");
+        }
+    }
+}
