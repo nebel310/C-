@@ -15,46 +15,55 @@ public class Participant
     }
 }
 
-// Структура вне класса
 public struct CompetitionResult
 {
-    public Participant Participant;
+    public string ParticipantName;
     public int FinalPlace;
+    public int TotalScore;
+
+    public override string ToString() => $"{FinalPlace}. {ParticipantName} (Сумма мест: {TotalScore})";
 }
 
 class Program
 {
-    // Структура внутри класса
-    struct JudgeScore
+    struct JudgeEvaluation
     {
         public int JudgeId;
         public double Score;
+        public string ParticipantName;
+
+        public override string ToString() => $"Судья {JudgeId}: {Score} ({ParticipantName})";
     }
 
     static void Main()
     {
-        List<Participant> participants = new List<Participant>
+        var participants = new List<Participant>
         {
             new Participant("Иванов", new[] {5.5, 4.8, 5.1, 5.0, 4.9, 5.2, 5.3}),
             new Participant("Петров", new[] {5.0, 5.2, 4.7, 5.1, 4.8, 5.0, 4.9}),
             new Participant("Сидоров", new[] {4.9, 4.7, 5.0, 4.8, 5.1, 4.9, 5.0})
         };
 
-        // Вывод входных данных
-        Console.WriteLine("Входные данные:");
-        foreach (var p in participants)
+        Console.WriteLine("Все оценки судей:");
+        var allScores = new List<JudgeEvaluation>();
+        for (int judgeId = 0; judgeId < 7; judgeId++)
         {
-            Console.WriteLine($"{p.Name}: {string.Join(", ", p.Scores)}");
+            foreach (var p in participants)
+            {
+                allScores.Add(new JudgeEvaluation
+                {
+                    JudgeId = judgeId + 1,
+                    Score = p.Scores[judgeId],
+                    ParticipantName = p.Name
+                });
+            }
+        }
+        foreach (var score in allScores)
+        {
+            Console.WriteLine(score);
         }
         Console.WriteLine();
 
-        if (participants.Count == 0)
-        {
-            Console.WriteLine("Нет участников.");
-            return;
-        }
-
-        // Рассчет мест
         for (int judge = 0; judge < 7; judge++)
         {
             for (int i = 0; i < participants.Count; i++)
@@ -69,27 +78,36 @@ class Program
             }
         }
 
-        // Сортировка пузырьком
-        for (int i = 0; i < participants.Count - 1; i++)
+        for (int i = 0; i < participants.Count; i++)
         {
-            for (int j = 0; j < participants.Count - i - 1; j++)
+            for (int j = 0; j < participants.Count - 1; j++)
             {
                 if (participants[j].TotalPlace > participants[j + 1].TotalPlace)
                 {
-                    var temp = participants[j];
+                    // Меняем местами соседние элементы
+                    Participant temp = participants[j];
                     participants[j] = participants[j + 1];
                     participants[j + 1] = temp;
                 }
             }
         }
 
-        // Вывод результатов
-        Console.WriteLine("Результаты:");
-        Console.WriteLine("Место | Участник  | Сумма мест");
-        Console.WriteLine("-----------------------------");
+        var results = new List<CompetitionResult>();
         for (int i = 0; i < participants.Count; i++)
         {
-            Console.WriteLine($"{i + 1,5} | {participants[i].Name,-9} | {participants[i].TotalPlace,10}");
+            results.Add(new CompetitionResult
+            {
+                ParticipantName = participants[i].Name,
+                FinalPlace = i + 1,
+                TotalScore = participants[i].TotalPlace
+            });
+        }
+
+        // Вывод итоговых результатов
+        Console.WriteLine("Итоговые результаты:");
+        foreach (var res in results)
+        {
+            Console.WriteLine(res);
         }
     }
 }
