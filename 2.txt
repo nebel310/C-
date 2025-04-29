@@ -45,39 +45,44 @@ class Program
         List<Participant> participants = new List<Participant>();
         try
         {
-            using (StreamReader reader = new StreamReader(filePath))
+            string[] lines = File.ReadAllLines(filePath);
+            
+            foreach (string line in lines)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                // Пропускаем пустые строки
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                
+                string[] parts = line.Split(':');
+                if (parts.Length != 2)
                 {
-                    string[] parts = line.Split(':');
-                    if (parts.Length != 2) continue;
+                    Console.WriteLine($"Ошибка формата в строке: {line}");
+                    continue;
+                }
 
-                    string name = parts[0].Trim();
-                    string[] scoresStr = parts[1].Split(',');
+                string name = parts[0].Trim();
+                string[] scoresStr = parts[1].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (scoresStr.Length != 7)
+                if (scoresStr.Length != 7)
+                {
+                    Console.WriteLine($"Ошибка: у участника {name} должно быть ровно 7 оценок (найдено {scoresStr.Length})");
+                    continue;
+                }
+
+                double[] scores = new double[7];
+                bool valid = true;
+                for (int i = 0; i < 7; i++)
+                {
+                    if (!double.TryParse(scoresStr[i].Trim(), out scores[i]))
                     {
-                        Console.WriteLine($"Ошибка: у участника {name} должно быть ровно 7 оценок");
-                        continue;
+                        Console.WriteLine($"Ошибка: неверный формат оценки у участника {name} - '{scoresStr[i].Trim()}'");
+                        valid = false;
+                        break;
                     }
+                }
 
-                    double[] scores = new double[7];
-                    bool valid = true;
-                    for (int i = 0; i < 7; i++)
-                    {
-                        if (!double.TryParse(scoresStr[i].Trim(), out scores[i]))
-                        {
-                            Console.WriteLine($"Ошибка: неверный формат оценки у участника {name}");
-                            valid = false;
-                            break;
-                        }
-                    }
-
-                    if (valid)
-                    {
-                        participants.Add(new Participant(name, scores));
-                    }
+                if (valid)
+                {
+                    participants.Add(new Participant(name, scores));
                 }
             }
         }
