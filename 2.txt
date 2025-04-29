@@ -38,52 +38,29 @@ class Program
 
     static void Main()
     {
-        Console.WriteLine("Введите путь к файлу с данными участников:");
-        string filePath = Console.ReadLine();
+        string filePath = "C:\\parts.txt";
 
-        // Чтение данных из файла
         List<Participant> participants = new List<Participant>();
         try
         {
             string[] lines = File.ReadAllLines(filePath);
-            
+
             foreach (string line in lines)
             {
-                // Пропускаем пустые строки
                 if (string.IsNullOrWhiteSpace(line)) continue;
-                
+
                 string[] parts = line.Split(':');
-                if (parts.Length != 2)
-                {
-                    Console.WriteLine($"Ошибка формата в строке: {line}");
-                    continue;
-                }
 
                 string name = parts[0].Trim();
-                string[] scoresStr = parts[1].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (scoresStr.Length != 7)
-                {
-                    Console.WriteLine($"Ошибка: у участника {name} должно быть ровно 7 оценок (найдено {scoresStr.Length})");
-                    continue;
-                }
+                string[] scoresStr = parts[1].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
                 double[] scores = new double[7];
                 bool valid = true;
                 for (int i = 0; i < 7; i++)
                 {
-                    if (!double.TryParse(scoresStr[i].Trim(), out scores[i]))
-                    {
-                        Console.WriteLine($"Ошибка: неверный формат оценки у участника {name} - '{scoresStr[i].Trim()}'");
-                        valid = false;
-                        break;
-                    }
+                    double.TryParse(scoresStr[i].Trim(), out scores[i]);
                 }
-
-                if (valid)
-                {
-                    participants.Add(new Participant(name, scores));
-                }
+                participants.Add(new Participant(name, scores));
             }
         }
         catch (Exception ex)
@@ -98,8 +75,8 @@ class Program
             return;
         }
 
-        // Вывод всех оценок судей
-        Console.WriteLine("\nВсе оценки судей:");
+        Console.WriteLine();
+        Console.WriteLine("Все оценки судей:");
         var allScores = new List<JudgeEvaluation>();
         for (int judgeId = 0; judgeId < 7; judgeId++)
         {
@@ -119,7 +96,7 @@ class Program
         }
         Console.WriteLine();
 
-        // Расчёт мест у каждого судьи
+
         for (int judge = 0; judge < 7; judge++)
         {
             for (int i = 0; i < participants.Count; i++)
@@ -134,7 +111,7 @@ class Program
             }
         }
 
-        // Сортировка участников по сумме мест
+
         for (int i = 0; i < participants.Count; i++)
         {
             for (int j = 0; j < participants.Count - 1; j++)
@@ -148,7 +125,7 @@ class Program
             }
         }
 
-        // Формирование и вывод результатов
+
         var results = new List<CompetitionResult>();
         for (int i = 0; i < participants.Count; i++)
         {
