@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 public class Participant
 {
@@ -37,14 +38,63 @@ class Program
 
     static void Main()
     {
-        var participants = new List<Participant>
-        {
-            new Participant("Иванов", new[] {5.5, 4.8, 5.1, 5.0, 4.9, 5.2, 5.3}),
-            new Participant("Петров", new[] {5.0, 5.2, 4.7, 5.1, 4.8, 5.0, 4.9}),
-            new Participant("Сидоров", new[] {4.9, 4.7, 5.0, 4.8, 5.1, 4.9, 5.0})
-        };
+        Console.WriteLine("Введите путь к файлу с данными участников:");
+        string filePath = Console.ReadLine();
 
-        Console.WriteLine("Все оценки судей:");
+        // Чтение данных из файла
+        List<Participant> participants = new List<Participant>();
+        try
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] parts = line.Split(':');
+                    if (parts.Length != 2) continue;
+
+                    string name = parts[0].Trim();
+                    string[] scoresStr = parts[1].Split(',');
+
+                    if (scoresStr.Length != 7)
+                    {
+                        Console.WriteLine($"Ошибка: у участника {name} должно быть ровно 7 оценок");
+                        continue;
+                    }
+
+                    double[] scores = new double[7];
+                    bool valid = true;
+                    for (int i = 0; i < 7; i++)
+                    {
+                        if (!double.TryParse(scoresStr[i].Trim(), out scores[i]))
+                        {
+                            Console.WriteLine($"Ошибка: неверный формат оценки у участника {name}");
+                            valid = false;
+                            break;
+                        }
+                    }
+
+                    if (valid)
+                    {
+                        participants.Add(new Participant(name, scores));
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
+            return;
+        }
+
+        if (participants.Count == 0)
+        {
+            Console.WriteLine("Нет участников для обработки.");
+            return;
+        }
+
+        // Вывод всех оценок судей
+        Console.WriteLine("\nВсе оценки судей:");
         var allScores = new List<JudgeEvaluation>();
         for (int judgeId = 0; judgeId < 7; judgeId++)
         {
@@ -64,6 +114,7 @@ class Program
         }
         Console.WriteLine();
 
+        // Расчёт мест у каждого судьи
         for (int judge = 0; judge < 7; judge++)
         {
             for (int i = 0; i < participants.Count; i++)
@@ -78,13 +129,13 @@ class Program
             }
         }
 
+        // Сортировка участников по сумме мест
         for (int i = 0; i < participants.Count; i++)
         {
             for (int j = 0; j < participants.Count - 1; j++)
             {
                 if (participants[j].TotalPlace > participants[j + 1].TotalPlace)
                 {
-                    // Меняем местами соседние элементы
                     Participant temp = participants[j];
                     participants[j] = participants[j + 1];
                     participants[j + 1] = temp;
@@ -92,6 +143,7 @@ class Program
             }
         }
 
+        // Формирование и вывод результатов
         var results = new List<CompetitionResult>();
         for (int i = 0; i < participants.Count; i++)
         {
@@ -103,7 +155,6 @@ class Program
             });
         }
 
-        // Вывод итоговых результатов
         Console.WriteLine("Итоговые результаты:");
         foreach (var res in results)
         {
