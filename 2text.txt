@@ -1,0 +1,146 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+public class Participant
+{
+    public string Name;
+    public double[] Scores;
+    public int TotalPlace;
+
+    public Participant(string name, double[] scores)
+    {
+        Name = name;
+        Scores = scores;
+        TotalPlace = 0;
+    }
+}
+
+public struct CompetitionResult
+{
+    public string ParticipantName;
+    public int FinalPlace;
+    public int TotalScore;
+
+    public override string ToString() => $"{FinalPlace}. {ParticipantName} (Сумма мест: {TotalScore})";
+}
+
+class Program
+{
+    struct JudgeEvaluation
+    {
+        public int JudgeId;
+        public double Score;
+        public string ParticipantName;
+
+        public override string ToString() => $"Судья {JudgeId}: {Score} ({ParticipantName})";
+    }
+
+    static void Main()
+    {
+        string filePath = "C:\\parts.txt";
+
+        List<Participant> participants = new List<Participant>();
+        try
+        {
+            string[] lines = File.ReadAllLines(filePath);
+
+            foreach (string line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                string[] parts = line.Split(':');
+
+                string name = parts[0].Trim();
+                string[] scoresStr = parts[1].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                double[] scores = new double[7];
+                bool valid = true;
+                for (int i = 0; i < 7; i++)
+                {
+                    double.TryParse(scoresStr[i].Trim(), out scores[i]);
+                }
+                participants.Add(new Participant(name, scores));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
+            return;
+        }
+
+        if (participants.Count == 0)
+        {
+            Console.WriteLine("Нет участников для обработки.");
+            return;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Все оценки судей:");
+        var allScores = new List<JudgeEvaluation>();
+        for (int judgeId = 0; judgeId < 7; judgeId++)
+        {
+            foreach (var p in participants)
+            {
+                allScores.Add(new JudgeEvaluation
+                {
+                    JudgeId = judgeId + 1,
+                    Score = p.Scores[judgeId],
+                    ParticipantName = p.Name
+                });
+            }
+        }
+        foreach (var score in allScores)
+        {
+            Console.WriteLine(score);
+        }
+        Console.WriteLine();
+
+
+        for (int judge = 0; judge < 7; judge++)
+        {
+            for (int i = 0; i < participants.Count; i++)
+            {
+                int place = 1;
+                for (int j = 0; j < participants.Count; j++)
+                {
+                    if (participants[j].Scores[judge] > participants[i].Scores[judge])
+                        place++;
+                }
+                participants[i].TotalPlace += place;
+            }
+        }
+
+
+        for (int i = 0; i < participants.Count; i++)
+        {
+            for (int j = 0; j < participants.Count - 1; j++)
+            {
+                if (participants[j].TotalPlace > participants[j + 1].TotalPlace)
+                {
+                    Participant temp = participants[j];
+                    participants[j] = participants[j + 1];
+                    participants[j + 1] = temp;
+                }
+            }
+        }
+
+
+        var results = new List<CompetitionResult>();
+        for (int i = 0; i < participants.Count; i++)
+        {
+            results.Add(new CompetitionResult
+            {
+                ParticipantName = participants[i].Name,
+                FinalPlace = i + 1,
+                TotalScore = participants[i].TotalPlace
+            });
+        }
+
+        Console.WriteLine("Итоговые результаты:");
+        foreach (var res in results)
+        {
+            Console.WriteLine(res);
+        }
+    }
+}
